@@ -9,7 +9,7 @@ message Customer {
     string firstName = 1;
     string lastName = 2;
     string email = 3;
-    int64 created = 4;
+    string created = 4;
     string message = 5;
 }
 /* Describes a possible status of a seat */
@@ -28,8 +28,8 @@ message Seat {
     string number = 2;
     string section = 3;
     Status status = 4;
-    int64 changed = 5;
-    int64 created = 6;
+    string changed = 5;
+    string created = 6;
     Customer customer = 7;
     string message = 8;
 }
@@ -43,8 +43,8 @@ message Venue {
     string state_province = 5;
     string postal_code = 6;
     string country = 7;
-    int64 changed = 8;
-    int64 created = 9;
+    string changed = 8;
+    string created = 9;
     repeated Seat seats = 10;
     string message = 11;
 }
@@ -56,21 +56,18 @@ message Authentication {
 message VenueRequest {
     string venueId = 1;
     string authenticationId = 2;
-    string message = 3;
 }
 
 message SeatRequest {
     string venueId = 1;
     string seatId = 2;
     string authenticationId = 3;
-    string message = 4;
 }
 
 message SeatStatusRequest {
     string venueId = 1;
     Seat seat = 2;
     string authenticationId = 3;
-    string message = 4;
 }
 
 message PingRequest {

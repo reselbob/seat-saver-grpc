@@ -4,7 +4,8 @@
   "description": "A project to demonstrate implementing gRPC under Node.js",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "test": "mocha test/basic-grpc-tests.js",
+    "start": "npm index.js"
   },
   "repository": {
     "type": "git",
@@ -28,5 +29,11 @@
     "lodash": "^4.17.15",
     "mongoose": "^5.7.10",
     "uuid": "^3.3.3"
+  },
+  "devDependencies": {
+    "async": "^3.1.0",
+    "chai": "^4.2.0",
+    "minimist": "^1.2.0",
+    "mocha": "^6.2.2"
   }
 }

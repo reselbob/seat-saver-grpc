@@ -38,16 +38,22 @@ const getReservedSeats = async (venueId) => {
 const getVenues = async ()=>{
     const item = await mongoose.connect(process.env.MONGODB_URL, moption)
         .then(result => {
-            return Venue.find({});
+            console.log({message:`Getting venues at ${new Date()}`});
+            const venues = Venue.find({}).lean();
+            console.log({message:`Got venues at ${new Date()}`, venues});
+            return venues;
         });
     return item;
 }
 const getVenue = async (id)=>{
+    console.log({message:`Getting venue at ${new Date()}`, id});
     const item = await mongoose.connect(process.env.MONGODB_URL, moption)
         .then(result => {
+
             if(!id) return new Venue();
             return Venue.findById(id);
         });
+    console.log({message:`Got venue at ${new Date()}`, id, venue:item});
     return item;
 
 };

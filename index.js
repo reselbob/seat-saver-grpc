@@ -3,6 +3,11 @@ const protoLoader = require('@grpc/proto-loader');
 const {validateEnvVarsSync} = require('./validation');
 const {seedVenues} = require('./dataSeeding');
 const faker = require('faker');
+const dataManager = require('./dataManager');
+let server;
+
+
+const {mapVenueSync} = require('./helpers');
 
 
 const PROTO_PATH = __dirname + '/proto/seatsaver.proto';
@@ -43,11 +48,16 @@ function pingStream(call){
     call.end();
 }
 
-function getVenues(call, callback) {
-    callback(null, {message: 'Not Implemented'});
+async function getVenues(call, callback) {
+    const venues = await dataManager.getVenues();
+    venues.forEach(venue => {
+        call.write(mapVenueSync(venue));
+    });
+    call.end();
 }
-function getVenue(call, callback) {
-    callback(null, {message: 'Not Implemented'});
+async function getVenue(call, callback) {
+    const venue = await dataManager.getVenue(call.request.venueId);
+    callback(null, mapVenueSync(venue));
 }
 
 function getSeats(call, callback) {
@@ -58,16 +68,31 @@ function getSeat(call, callback) {
     callback(null, {message: 'Not Implemented'});
 }
 
-function reserveSeat(call, callback) {
-    callback(null, {message: 'Not Implemented'});
+async function reserveSeat(call, callback) {
+    call.request.seat.venueId = call.request.venueId;
+    call.request.seat.status = 'RESERVED';
+    console.log({message: 'Reserving Seat', seat: call.request.seat});
+    const seat = await dataManager.reserveSeat(call.request.seat);
+    console.log({message: 'Reserved Seat', seat});
+    callback(null, seat);
 }
 
-function releaseSeat(call, callback) {
-    callback(null, {message: 'Not Implemented'});
+async function releaseSeat(call, callback) {
+    call.request.seat.venueId = call.request.venueId;
+    call.request.seat.status = 'OPEN';
+    console.log({message: 'Releasing Seat', seat: call.request.seat});
+    const seat = await dataManager.releaseSeat(call.request.seat);
+    console.log({message: 'Released Seat', seat});
+    callback(null, seat);
 }
 
-function buySeat(call, callback) {
-    callback(null, {message: 'Not Implemented'});
+async function buySeat(call, callback) {
+    call.request.seat.venueId = call.request.venueId;
+    call.request.seat.status = 'SOLD';
+    console.log({message: 'Buying Seat', seat: call.request.seat});
+    const seat = await dataManager.buySeat(call.request.seat);
+    console.log({message: 'Seat Bought', seat});
+    callback(null, seat);
 }
 /**
  * Starts an RPC server that receives requests for the Greeter service at the
@@ -87,7 +112,7 @@ async function main()  {
     implementations.releaseSeat = releaseSeat;
     implementations.reserveSeat = reserveSeat;
 
-    const server = new grpc.Server();
+    server = new grpc.Server();
     server.addService(seatsaver_proto.SeatSaverService.service, implementations);
     server.bind(`0.0.0.0:${PORT}`, grpc.ServerCredentials.createInsecure());
     console.log({message: `Starting gRPC Server on port ${PORT}`, startingTime: new Date()});
@@ -99,3 +124,5 @@ seedVenues()
     .then(result => {
         return main();
     });
+
+module.exports = {server};
