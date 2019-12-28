@@ -50,11 +50,31 @@ const getRandomSeatCustomerSync = () => {
 };
 
 
-describe('Basic Grpc Tests: ', () => {
-    before(() => {
+let testSeat = null;
 
+
+const getTestSeat = async ()=>{
+    let ts;
+    const call = client.GetVenues({});
+    call.on('data', function (result) {
+        if(!testSeat){
+            if(!ts) ts = {seat: sample(result.seats), venueId: result.id};
+        }
     });
+    call.on('end', function () {
+        testSeat = ts;
+        console.log("ended");
+    });
+    call.on('error', function (e) {
+        console.log(error);
+        //done(error);
+    });
+    call.on('status', function (status) {
+        console.log(status);
+    });
+};
 
+describe('Basic Grpc Tests: ', () => {
     it('Can Ping Server ', function (done) {
         function pingCallback(error, result) {
             if (error) {
@@ -68,10 +88,21 @@ describe('Basic Grpc Tests: ', () => {
         client.Ping({}, pingCallback);
     });
 
-    it('Can Get Venues', function (done) {
+    it('Can Get Venues and Reserve Seats', function (done) {
         const call = client.GetVenues({});
         call.on('data', function (result) {
             expect(result).to.be.an('object');
+            const obj = {seat: sample(result.seats), venueId: result.id};
+            obj.customer = getRandomCustomerSync();
+            function reserveSeatCallback(error, result) {
+                if (error) {
+                    console.log(error);
+                    done(error);
+                }
+                expect(result).to.be.an('object');
+                expect(result.status).to.equal('RESERVED');
+            }
+            client.ReserveSeat(obj, reserveSeatCallback);
         });
         call.on('end', function () {
             done();
@@ -85,80 +116,61 @@ describe('Basic Grpc Tests: ', () => {
         });
     });
 
-    const reserveASeat = async (seat, done) => {
-        function reserveSeatCallback(error, result) {
-            if (error) {
-                console.log(error);
-                done(error);
-            }
+    it('Can Get Venues and Release Seats', function (done) {
+        const call = client.GetVenues({});
+        call.on('data', function (result) {
             expect(result).to.be.an('object');
+            const obj = {seat: sample(result.seats), venueId: result.id};
+            function releaseSeatCallback(error, result) {
+                if (error) {
+                    console.log(error);
+                    done(error);
+                }
+                expect(result).to.be.an('object');
+                expect(result.status).to.equal('OPEN');
+                expect(result.customer).to.be.a('null');
+                done()
+            }
+            client.ReleaseSeat(obj, releaseSeatCallback);
+        });
+        call.on('end', function () {
             done();
-        }
-
-        client.ReserveSeat(seat, reserveSeatCallback);
-    };
-
-    const getKnownSeatRequestSync = () => {
-        return  {
-            venueId: "5dce2caaba1d1d3201065037",
-            seat: {
-                id: "5dce2caaba1d1d3201065259",
-                number: "Z20",
-                section: "Section-Z",
-                status: "OPEN",
-                changed: "Thu Nov 14 2019 20:42:18 GMT-0800 (Pacific Standard Time)",
-                created: "Thu Nov 14 2019 20:42:18 GMT-0800 (Pacific Standard Time)",
-                customer: {
-                    firstName: "Gonzalo",
-                    lastName: "Considine",
-                    email: "Gonzalo.Considine@dagmar.name",
-                    created: "",
-                    message: ""
-                },
-                message: ""
-            }
-        }
-    }
-
-    it('Can Reserve Seat', function (done) {
-        function reserveSeatCallback(error, result) {
-            if (error) {
-                console.log(error);
-                done(error);
-            }
-            expect(result).to.be.an('object');
-            expect(result.status).to.equal('RESERVED');
-            done()
-        }
-        const obj = getKnownSeatRequestSync();
-        client.ReserveSeat(obj, reserveSeatCallback);
+        });
+        call.on('error', function (e) {
+            console.log(error);
+            done(error);
+        });
+        call.on('status', function (status) {
+            console.log(status);
+        });
     });
 
-    it('Can Release Seat', function (done) {
-        function releaseSeatCallback(error, result) {
-            if (error) {
-                console.log(error);
-                done(error);
-            }
+    it('Can Get Venues and Buy Seats', function (done) {
+        const call = client.GetVenues({});
+        call.on('data', function (result) {
             expect(result).to.be.an('object');
-            expect(result.status).to.equal('OPEN');
-            done()
-        }
-        const obj = getKnownSeatRequestSync();
-        client.ReleaseSeat(obj, releaseSeatCallback);
-    });
-
-    it('Can Buy Seat', function (done) {
-        function buySeatCallback(error, result) {
-            if (error) {
-                console.log(error);
-                done(error);
+            const obj = {seat: sample(result.seats), venueId: result.id};
+            function buySeatCallback(error, result) {
+                if (error) {
+                    console.log(error);
+                    done(error);
+                }
+                expect(result).to.be.an('object');
+                expect(result.status).to.equal('SOLD');
+                expect(result.customer).to.be.an('object');
+                done()
             }
-            expect(result).to.be.an('object');
-            expect(result.status).to.equal('SOLD');
-            done()
-        }
-        const obj = getKnownSeatRequestSync();
-        client.BuySeat(obj, buySeatCallback);
+            client.BuySeat(obj, buySeatCallback);
+        });
+        call.on('end', function () {
+            done();
+        });
+        call.on('error', function (e) {
+            console.log(error);
+            done(error);
+        });
+        call.on('status', function (status) {
+            console.log(status);
+        });
     });
 });
