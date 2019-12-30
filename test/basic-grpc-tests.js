@@ -74,7 +74,7 @@ describe('Basic Grpc Tests: ', () => {
         call.on('data', function (result) {
             expect(result).to.be.an('object');
             const obj = {seat: sample(result.seats), venueId: result.id};
-            obj.customer = getRandomCustomerSync();
+            obj.seat.customer = getRandomCustomerSync();
             function reserveSeatCallback(error, result) {
                 if (error) {
                     console.log(error);
@@ -82,6 +82,7 @@ describe('Basic Grpc Tests: ', () => {
                 }
                 expect(result).to.be.an('object');
                 expect(result.status).to.equal('RESERVED');
+                expect(result.customer).to.be.an('object');
             }
             client.ReserveSeat(obj, reserveSeatCallback);
         });
@@ -149,6 +150,7 @@ describe('Basic Grpc Tests: ', () => {
         call.on('data', function (result) {
             expect(result).to.be.an('object');
             const obj = {seat: sample(result.seats), venueId: result.id};
+            obj.seat.customer = getRandomCustomerSync();
             function buySeatCallback(error, result) {
                 if (error) {
                     console.log(error);
