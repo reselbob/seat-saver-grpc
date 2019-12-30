@@ -129,7 +129,6 @@ describe('Basic Grpc Tests: ', () => {
                 expect(result).to.be.an('object');
                 expect(result.status).to.equal('OPEN');
                 expect(result.customer).to.be.a('null');
-                done()
             }
             client.ReleaseSeat(obj, releaseSeatCallback);
         });
