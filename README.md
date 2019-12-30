@@ -5,7 +5,7 @@ This is an example project that demonstrates how the details of creating and usi
 ## Running Seat Saver gRPC as a Docker-Compose API
 You can run Seat Saver gRPC using Docker Compose. The Docker Compose setup installs a local instance of MongoDB. In 
 addition, it will bind MongoDB to Seat Saver gRPC automatically. You don't need to set any environment variables. The
-Docker Compose installation process does this for you immediately.
+Docker Compose installation process does this for you automatically.
 
 **Step 1:** Clone the project from this GitHub repository as follows:
 
