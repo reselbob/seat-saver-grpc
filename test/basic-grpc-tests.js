@@ -53,26 +53,7 @@ const getRandomSeatCustomerSync = () => {
 let testSeat = null;
 
 
-const getTestSeat = async ()=>{
-    let ts;
-    const call = client.GetVenues({});
-    call.on('data', function (result) {
-        if(!testSeat){
-            if(!ts) ts = {seat: sample(result.seats), venueId: result.id};
-        }
-    });
-    call.on('end', function () {
-        testSeat = ts;
-        console.log("ended");
-    });
-    call.on('error', function (e) {
-        console.log(error);
-        //done(error);
-    });
-    call.on('status', function (status) {
-        console.log(status);
-    });
-};
+
 
 describe('Basic Grpc Tests: ', () => {
     it('Can Ping Server ', function (done) {
@@ -103,6 +84,25 @@ describe('Basic Grpc Tests: ', () => {
                 expect(result.status).to.equal('RESERVED');
             }
             client.ReserveSeat(obj, reserveSeatCallback);
+        });
+        call.on('end', function () {
+            done();
+        });
+        call.on('error', function (e) {
+            console.log(error);
+            done(error);
+        });
+        call.on('status', function (status) {
+            console.log(status);
+        });
+    });
+
+    it('Can Get Seats in Venue', function (done) {
+        const call = client.GetSeats({});
+        call.on('data', function (result) {
+            expect(result).to.be.an('object');
+            expect(result.number).to.be.a('string');
+            expect(result.section).to.be.a('string');
         });
         call.on('end', function () {
             done();

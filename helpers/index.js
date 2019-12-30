@@ -17,7 +17,9 @@ const mapSeatSync = (seatData) =>{
     seatData.id = id;
     seatData.created = created;
     seatData.changed = changed;
-    mapCustomerSync(seatData.customer)
+    seatData.customer = mapCustomerSync(seatData.customer)
+
+    return seatData;
 };
 
 const mapCustomerSync = (customerData) =>{
@@ -25,6 +27,7 @@ const mapCustomerSync = (customerData) =>{
         if(customerData.created) customerData.created = customerData.created.toString();
         if(customerData.changed) customerData.changed = customerData.changed.toString();
     }
+    return customerData;
 };
 
 module.exports = {mapVenueSync,mapSeatSync};

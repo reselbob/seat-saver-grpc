@@ -16,6 +16,8 @@ This is an example project that demonstrates how the details of creating and usi
 
 `npm install`
 
+`export MONGODB_URL=<the_mongodb_url>`
+
 `npm start`
 
  The application requires

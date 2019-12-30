@@ -21,7 +21,17 @@ const searchByStatus = async (venueId, status)=> {
         return _.filter(arr, { 'status': status});
     }
     return item;
-}
+};
+
+const getSeat = async (venueId, seatId)=> {
+    const item = await mongoose.connect(process.env.MONGODB_URL, moption)
+        .then(result => {
+            const rtn = Venue.find({_id: venueId, seats: { $elemMatch: {id: seatId}} });
+            console.log(rtn[0]);
+            return rtn[0];
+        });
+    return item;
+};
 
 const getSoldSeats = async (venueId) => {
     return await searchByStatus(venueId, 'SOLD');
@@ -113,6 +123,7 @@ module.exports = {
     validateDataStore,
     getVenues,
     getVenue,
+    getSeat,
     getReservedSeats,
     getOpenSeats,
     getSoldSeats,

@@ -6,9 +6,7 @@ const faker = require('faker');
 const dataManager = require('./dataManager');
 let server;
 
-
-const {mapVenueSync} = require('./helpers');
-
+const {mapVenueSync, mapSeatSync} = require('./helpers');
 
 const PROTO_PATH = __dirname + '/proto/seatsaver.proto';
 const PORT = process.env.PORT || 50051;
@@ -21,8 +19,6 @@ const packageDefinition = protoLoader.loadSync(
         defaults: true,
         oneofs: true
     });
-//const seatsaver_proto = grpc.loadPackageDefinition(packageDefinition).seatsaver;
-
 const seatsaver_proto = grpc.loadPackageDefinition(packageDefinition).seatsaver;
 
 /**
@@ -60,12 +56,37 @@ async function getVenue(call, callback) {
     callback(null, mapVenueSync(venue));
 }
 
-function getSeats(call, callback) {
-    callback(null, {message: 'Not Implemented'});
+async function getOpenSeats(call, callback) {
+    const seats = await dataManager.getOpenSeats(call.request.venueId);
+    seats.forEach(seat => {
+        call.write(mapSeatSync(seat));
+    });
+    call.end();
 }
 
-function getSeat(call, callback) {
-    callback(null, {message: 'Not Implemented'});
+async function getReservedSeats(call, callback) {
+    const seats = await dataManager.getReservedSeats(call.request.venueId);
+    seats.forEach(seat => {
+        call.write(mapSeatSync(seat));
+    });
+    call.end();
+}
+
+async function getSoldSeats(call, callback) {
+    const seats = await dataManager.getSoldSeats(call.request.venueId);
+    seats.forEach(seat => {
+        call.write(mapSeatSync(seat));
+    });
+    call.end();
+}
+
+async function getSeats(call, callback) {
+    const venue = await dataManager.getVenue(call.request.venueId);
+    venue.seats.forEach(seat => {
+        const s = mapSeatSync(seat._doc);
+        call.write(s);
+    });
+    call.end();
 }
 
 async function reserveSeat(call, callback) {
@@ -107,7 +128,9 @@ async function main()  {
     implementations.getVenues = getVenues;
     implementations.getVenue = getVenue;
     implementations.getSeats = getSeats;
-    implementations.getSeat = getSeat;
+    implementations.getReservedSeats = getReservedSeats;
+    implementations.getSoldSeats = getSoldSeats;
+    implementations.getOpenSeats = getOpenSeats;
     implementations.buySeat = buySeat;
     implementations.releaseSeat = releaseSeat;
     implementations.reserveSeat = reserveSeat;
