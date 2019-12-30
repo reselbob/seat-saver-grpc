@@ -42,7 +42,7 @@ rpc GetVenue(VenueRequest) returns (Venue) {}
 rpc GetOpenSeats(VenueRequest) returns (stream Seat) {}
 rpc GetSoldSeats(VenueRequest) returns (stream Seat) {}
 rpc GetReservedSeats(VenueRequest) returns (stream Seat) {}
-rpc GetSeat(SeatRequest) returns (Seat) {}
+rpc GetSeats(VenueRequest) returns (stream Seat) {}
 rpc ReserveSeat(SeatStatusRequest) returns (Seat) {}
 rpc ReleaseSeat(SeatStatusRequest) returns (Seat) {}
 rpc BuySeat(SeatStatusRequest) returns (Seat) {}
