@@ -2,7 +2,10 @@
 
 This is an example project that demonstrates how the details of creating and using gRPC under Node.js.
 
-##Installation
+## Running Seat Saver gRPC as a Docker-Compose API
+You can run Seat Saver gRPC using Docker Compose. The Docker Compose setup installs a local instance of MongoDB. In 
+addition, it will bind MongoDB to Seat Saver gRPC automatically. You don't need to set any environment variables. The
+Docker Compose installation process does this for you immediately.
 
 **Step 1:** Clone the project from this GitHub repository as follows:
 
@@ -12,25 +15,51 @@ This is an example project that demonstrates how the details of creating and usi
 
 `cd seat-saver-grpc`
 
-**Step 3:** Install the code dependencies and then start the gRPC server
+**Step 3:** Run `docker-compose`
+
+`docker-compose up`
+
+## Running Seat Saver gRPC as a Standalone API
+
+**Step 1:** Clone the project from this GitHub repository as follows:
+
+`git clone https://github.com/reselbob/seat-saver-grpc.git`
+
+**Step 2:** Navigate to the project directory:
+
+`cd seat-saver-grpc`
+
+**Step 3:** Install the dependencies
 
 `npm install`
 
-`export MONGODB_URL=<the_mongodb_url>`
+The application will seed test data when in the MongoDB database when it initializes.
+Therefore, the application might take a few minutes to start up initially.
 
-`npm start`
+**Step 4:** Export the environment variable, `MONGODB_URL` with the value of the fully qualified URL required
+to access the remote or local MongoDB database.
 
- The application requires
-that the location of the MongoDB be assigned according to its URL. That URL needs to be assigned to the 
-environment variable, `MONGODB_URL`. Should a valid URL not be assigned to `MONGODB_URL`, the application will NOT
-start up.
+`export MONGODB_URL=<mongo_db_url>`
 
-The application will seed test data when in the MongoDB database when it initializes. Thus, the application might
-take a few minutes to start up initially.
+The application requires that the location of the MongoDB be assigned according to its URL. That URL needs to be assigned to the environment variable, MONGODB_URL.
+Should a valid URL not be assigned to MONGODB_URL, the application will NOT start up.
 
-**Step 4:** After the application starts, run the unit tests
+**Step 5:** Start the gRPC API
+
+`node index.js`
+
+**Step 6:** Run the project's unit tests
 
 `npm test`
+
+## Using the BloomRPC GUI to run gRPC calls against Seat Save
+
+BloomRPC is a desktop utility that allows you to configure and execute gRPC calls visually.
+
+![bloomgrpc](./images/bloomrpc-gui.png)
+
+You install the BloomRPC GUI on your local machine by following the instructions found at
+the project's GitHub respository, [here](https://github.com/uw-labs/bloomrpc).
 
 ## Types
 The project is a gRPC API that allows users to RESERVE, BUY or RELEASE a seat in a particular venue. The gRPC
@@ -51,4 +80,6 @@ rpc PingStream(PingRequest) returns (stream PingResponse) {}
 ```
 
 You view the definitions of the types in the proto file found [here](./proto/seatsaver.proto).
+
+
 
