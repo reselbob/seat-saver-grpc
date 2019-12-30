@@ -37,15 +37,17 @@ The project is a gRPC API that allows users to RESERVE, BUY or RELEASE a seat in
 API exposes the following functions:
 
 ```grpc
-GetVenues(Authentication) returns (stream Venue) {}
-GetVenue(VenueRequest) returns (Venue) {}
-GetSeats(VenueRequest) returns (stream Seat) {}
-GetSeat(SeatRequest) returns (Seat) {}
-ReserveSeat(SeatStatusRequest) returns (Seat) {}
-ReleaseSeat(SeatStatusRequest) returns (Seat) {}
-BuySeat(SeatStatusRequest) returns (Seat) {}
-Ping(PingRequest) returns (PingResponse) {}
-PingStream(PingRequest) returns (stream PingResponse) {}
+rpc GetVenues(Authentication) returns (stream Venue) {}
+rpc GetVenue(VenueRequest) returns (Venue) {}
+rpc GetOpenSeats(VenueRequest) returns (stream Seat) {}
+rpc GetSoldSeats(VenueRequest) returns (stream Seat) {}
+rpc GetReservedSeats(VenueRequest) returns (stream Seat) {}
+rpc GetSeat(SeatRequest) returns (Seat) {}
+rpc ReserveSeat(SeatStatusRequest) returns (Seat) {}
+rpc ReleaseSeat(SeatStatusRequest) returns (Seat) {}
+rpc BuySeat(SeatStatusRequest) returns (Seat) {}
+rpc Ping(PingRequest) returns (PingResponse) {}
+rpc PingStream(PingRequest) returns (stream PingResponse) {}
 ```
 
 You view the definitions of the types in the proto file found [here](./proto/seatsaver.proto).
