@@ -7,6 +7,53 @@ const validateEnvVarsSync = () => {
     if (errors.length > 0) throw new Error(JSON.stringify(errors));
 };
 
+const getValidationFunctionSync = (objectName, schemaName, ) => {
+    return new Function(objectName, `return validator.validate(${objectName}, \'${schemaName}\')`);
+};
+
+
+const getValidatorWithSchemaPopulated = (pathToJsonSchema) => {
+    const obj = JSON.parse(fs.readFileSync(pathToJsonSchema, "utf8"));
+    for (let prop in obj.definitions) {
+        const instanceName = obj.definitions[prop].title.toLowerCase();
+        v.addSchema(instanceName, `#/definitions/${prop}`);
+    }
+    return v;
+};
+
+
+const getValidationFunctionsSync = (pathToJsonSchema, validator) => {
+    const obj = JSON.parse(fs.readFileSync(pathToJsonSchema, "utf8"));
+    const functions = {};
+    for (let prop in obj.definitions) {
+        if (obj.definitions.hasOwnProperty(prop)) {
+            const instanceName = obj.definitions[prop].title.toLowerCase();
+            validator.addSchema(instanceName, `#/definitions/${prop}`);
+            const functionName = 'validate' + prop.replace('seatsaver.', '');
+            functions[functionName] = getValidationFunctionSync(`${instanceName}ToValidate`, instanceName)
+        }
+    }
+    return functions
+};
+
+const generateValidationFunctionsJSSync = (jsonSchemaFileSpec, outputFileSpec) => {
+
+    const fileSpec = jsonSchemaFileSpec;
+    const validationFunctions = getValidatonFunctions(jsonSchemaFileSpec, v);
+
+    fs.writeFileSync(outputFileSpec, 'const Validator = require(\'jsonschema\').Validator;\n');
+    fs.appendFileSync(outputFileSpec, 'const validator = new Validator();\n');
+    const exers = [];
+    for (let func in validationFunctions) {
+
+        exers.push(func);
+        const str = `const ${func} = ${validationFunctions[func].toString()};`;
+        //str.replace(' anonymous', '');
+        fs.appendFileSync(fileSpec, str.replace(' anonymous', '') + "\n");
+    }
+
+    fs.appendFileSync(fileSpec, `module.exports = {${exers.toString()}}`);
+};
 const seatSchema = {
     "id": "/Seat",
     "type": "object",
@@ -34,16 +81,16 @@ const validateSeatSync = (seat) => {
 
 const customerSchema = {
     "id": "/Customer",
-    "type": "object",
-    "properties": {
-        "id": {"type": "string"},
-        "firstName": {"type": "string"},
-        "lastName": {"type": "string"},
-        "email": {"type": "string"},
-        "created": {"type": "string"},
-        "changed": {"type": "string"},
-    },
-    "required": ["firstName", "lastName", "email"]
+ "type": "object",
+ "properties": {
+  "id": {"type": "string"},
+  "firstName": {"type": "string"},
+  "lastName": {"type": "string"},
+  "email": {"type": "string"},
+  "created": {"type": "string"},
+  "changed": {"type": "string"},
+ },
+ "required": ["firstName", "lastName", "email"]
 };
 
 const validateCustomerSync = (customer) => {
@@ -76,4 +123,4 @@ const validateVenueSync = (venue) => {
     v.addSchema(seatSchema, '/Seat');
     return v.validate(venue, venueSchema)
 };
-module.exports = {validateEnvVarsSync, validateCustomerSync, validateSeatSync, validateVenueSync};
+module.exports = {validateEnvVarsSync, validateCustomerSync, validateSeatSync, validateVenueSync, getValidatorWithSchemaPopulated};

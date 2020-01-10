@@ -1,0 +1,213 @@
+{
+    "definitions": {
+        "seatsaver.Customer": {
+            "title": "Customer",
+            "type": "object",
+            "properties": {
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "created": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "seatsaver.Seat": {
+            "title": "Seat",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "string"
+                },
+                "section": {
+                    "type": "string"
+                },
+                "status": {
+                    "title": "Status",
+                    "type": "string",
+                    "enum": [
+                        "RELEASING",
+                        "OPEN",
+                        "RESERVING",
+                        "RESERVED",
+                        "SELLING",
+                        "SOLD"
+                    ]
+                },
+                "changed": {
+                    "type": "string"
+                },
+                "created": {
+                    "type": "string"
+                },
+                "customer": {
+                    "$ref": "#/definitions/seatsaver.Customer"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "seatsaver.Venue": {
+            "title": "Venue",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "address": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "state_province": {
+                    "type": "string"
+                },
+                "postal_code": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "changed": {
+                    "type": "string"
+                },
+                "created": {
+                    "type": "string"
+                },
+                "seats": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/seatsaver.Seat"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "seatsaver.Authentication": {
+            "title": "Authentication",
+            "type": "object",
+            "properties": {
+                "authenticationId": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "seatsaver.VenueRequest": {
+            "title": "VenueRequest",
+            "type": "object",
+            "properties": {
+                "venueId": {
+                    "type": "string"
+                },
+                "authenticationId": {
+                    "type": "string"
+                }
+            }
+        },
+        "seatsaver.SeatRequest": {
+            "title": "SeatRequest",
+            "type": "object",
+            "properties": {
+                "venueId": {
+                    "type": "string"
+                },
+                "seatId": {
+                    "type": "string"
+                },
+                "authenticationId": {
+                    "type": "string"
+                }
+            }
+        },
+        "seatsaver.SeatStatusRequest": {
+            "title": "SeatStatusRequest",
+            "type": "object",
+            "properties": {
+                "venueId": {
+                    "type": "string"
+                },
+                "seat": {
+                    "$ref": "#/definitions/seatsaver.Seat"
+                },
+                "authenticationId": {
+                    "type": "string"
+                }
+            }
+        },
+        "seatsaver.PingRequest": {
+            "title": "PingRequest",
+            "type": "object",
+            "properties": {
+                "authenticationId": {
+                    "type": "string"
+                },
+                "streamItemCount": {
+                    "type": "integer",
+                    "minimum": -2147483648,
+                    "maximum": 2147483647
+                }
+            }
+        },
+        "seatsaver.PingResponse": {
+            "title": "PingResponse",
+            "type": "object",
+            "properties": {
+                "runtimeInfo": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "seatsaver.VenuesResponse": {
+            "title": "VenuesResponse",
+            "type": "object",
+            "properties": {
+                "venues": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/seatsaver.Venue"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "seatsaver.Status": {
+            "title": "Status",
+            "type": "string",
+            "enum": [
+                "RELEASING",
+                "OPEN",
+                "RESERVING",
+                "RESERVED",
+                "SELLING",
+                "SOLD"
+            ]
+        }
+    }
+}
